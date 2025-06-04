@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Github Clone</string>
+    <string name="error_request_timeout">Request Time out</string>
+    <string name="error_too_many_request">There are too many request\n</string>
+    <string name="error_no_internet">no internet connection, please check out connection</string>
+    <string name="error_server_error">Server Error\n</string>
+    <string name="error_serialization">Error parsing data</string>
+    <string name="unknown">Unknown Error has occurred</string>
 </resources>
