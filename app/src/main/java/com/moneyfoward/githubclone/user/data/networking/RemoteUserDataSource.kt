@@ -17,13 +17,13 @@ import io.ktor.http.parameters
 class RemoteUserDataSource(
     private val httpClient: HttpClient
 ): UserDataSource {
-    override suspend fun getUsers(): Result<List<User>, NetworkError> {
+    override suspend fun getUsers(page: Int): Result<List<User>, NetworkError> {
         return safeCall<List<UserDto>> {
             httpClient.get(
                 urlString = buildUrl("/users")
             ) {
                 parameters {
-                    append("since", 0.toString())
+                    append("since", (page*30).toString())
                 }
             }
         }.map {
