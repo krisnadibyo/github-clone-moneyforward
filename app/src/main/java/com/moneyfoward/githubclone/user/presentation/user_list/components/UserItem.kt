@@ -32,8 +32,8 @@ fun UserItem(
 ) {
     Card(
         modifier = Modifier
+            .padding(horizontal = 12.dp)
             .fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 4.dp
         )

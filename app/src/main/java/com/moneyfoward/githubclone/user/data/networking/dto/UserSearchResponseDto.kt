@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class UserListResponseDto(
+data class UserSearchResponseDto(
     @SerialName("total_count")
     val itemCount: Int,
 

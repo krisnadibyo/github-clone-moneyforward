@@ -4,8 +4,9 @@ import com.moneyfoward.githubclone.user.domain.User
 
 
 data class UserListState(
-    val isLoading: Boolean = false,
+    val isRefreshing: Boolean = false,
+    val isLoadingMore: Boolean = false,
     val users: List<User> = emptyList(),
     val selectedUser: User? = null,
-    val page: Int = 1
+    val query: String? = null,
 )

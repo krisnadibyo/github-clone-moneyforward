@@ -6,4 +6,5 @@
     <string name="error_server_error">Server Error\n</string>
     <string name="error_serialization">Error parsing data</string>
     <string name="unknown">Unknown Error has occurred</string>
+    <string name="error_rate_limit">Rate Limit Exceeded</string>
 </resources>

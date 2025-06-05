@@ -11,6 +11,7 @@ fun NetworkError.toString(context: Context): String {
         NetworkError.NO_INTERNET -> R.string.error_no_internet
         NetworkError.SERVER_ERROR -> R.string.error_server_error
         NetworkError.SERIALIZATION -> R.string.error_serialization
+        NetworkError.RATE_LIMIT -> R.string.error_rate_limit
         NetworkError.UNKNOWN -> R.string.unknown
     }
     return context.getString(resId)
