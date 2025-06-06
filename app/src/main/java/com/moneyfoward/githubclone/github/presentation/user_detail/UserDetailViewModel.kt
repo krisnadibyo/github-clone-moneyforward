@@ -28,7 +28,12 @@ class UserDetailViewModel(
     private val _state = MutableStateFlow<UserDetailState>(UserDetailState())
     val state = _state
         .onStart {
-            refresh()
+            if (!isFirstLoaded) {
+                isFirstLoaded = true
+                savedStateHandle["isLoaded"] = true
+                refresh()
+
+            }
         }
         .stateIn(
             viewModelScope,
@@ -36,6 +41,7 @@ class UserDetailViewModel(
             UserDetailState()
         )
     // Business State
+    private var isFirstLoaded = savedStateHandle["isLoaded"] ?: false
     private val username = checkNotNull(savedStateHandle.get<String>("username"))
     private var currentPage = 1
     private var hasNextPage = true
@@ -48,14 +54,9 @@ class UserDetailViewModel(
     // Intent
     fun onAction(action: UserDetailAction) {
         when(action) {
-            is UserDetailAction.OnClickRepository -> {
-
-            }
-
             UserDetailAction.OnScrollToBottom -> {
                 loadMore()
             }
-
             UserDetailAction.OnRefresh -> {
                 refresh()
             }

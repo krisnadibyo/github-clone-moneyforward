@@ -1,5 +1,6 @@
 package com.moneyfoward.githubclone.github.presentation.user_list
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.moneyfoward.githubclone.core.data.networking.ConfigApi
@@ -19,7 +20,8 @@ import kotlinx.coroutines.launch
 
 
 class UserListViewModel (
-    private val repository: UserDataSource
+    private val repository: UserDataSource,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     //UI State
@@ -27,7 +29,11 @@ class UserListViewModel (
     private val _state = MutableStateFlow<UserListState>(UserListState())
     val state = _state
         .onStart {
-            refresh()
+            if (!isFirstLoaded) {
+                isFirstLoaded = true
+                savedStateHandle["isLoaded"] = true
+                refresh()
+            }
         }
         .stateIn(
             viewModelScope,
@@ -36,6 +42,7 @@ class UserListViewModel (
         )
 
     // Business State
+    private var isFirstLoaded = savedStateHandle["isLoaded"] ?: false
     private var currentPage = 1
     private var hasNextPage = true
     private var sinceId = 0
@@ -48,10 +55,6 @@ class UserListViewModel (
     //Intent
     fun onAction(action: UserListAction) {
         when(action) {
-            is UserListAction.OnUserClick -> {
-
-            }
-
             is UserListAction.OnRefresh -> {
                 refresh()
             }

@@ -50,7 +50,7 @@ fun UserListItem(
                 model = user.avatar,
                 contentDescription = null,
                 modifier = Modifier
-                    .size(50.dp)
+                    .size(45.dp)
                     .clip(CircleShape),
                 contentScale = ContentScale.Crop
             )

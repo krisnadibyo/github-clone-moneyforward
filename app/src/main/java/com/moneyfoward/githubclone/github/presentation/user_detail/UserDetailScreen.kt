@@ -1,5 +1,6 @@
 package com.moneyfoward.githubclone.github.presentation.user_detail
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,12 +26,16 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.moneyfoward.githubclone.core.presentation.ObserverAsEvents
+import com.moneyfoward.githubclone.core.presentation.toString
 import com.moneyfoward.githubclone.ui.theme.Typography
 import com.moneyfoward.githubclone.github.presentation.user_detail.components.UserInfoSection
 import com.moneyfoward.githubclone.github.presentation.user_detail.components.UserRepoItem
+import com.moneyfoward.githubclone.github.presentation.user_list.UserListEvent
 import com.moneyfoward.githubclone.ui.theme.Dimens
 import org.koin.androidx.compose.koinViewModel
 
@@ -41,6 +46,7 @@ fun UserDetailScreen(
     viewModel: UserDetailViewModel = koinViewModel(),
     navController: NavController
 ) {
+    val context = LocalContext.current
     val state = viewModel.state.collectAsState()
     val listState = rememberLazyListState()
     val shouldLoadMore = remember {
@@ -57,6 +63,18 @@ fun UserDetailScreen(
     LaunchedEffect(shouldLoadMore.value) {
         if (shouldLoadMore.value && !state.value.repositories.isEmpty()) {
             loadMore()
+        }
+    }
+
+    ObserverAsEvents(events = viewModel.events) { event ->
+        when (event) {
+            is UserDetailEvent.Error -> {
+                Toast.makeText(
+                    context,
+                    event.error.toString(context),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
         }
     }
 
