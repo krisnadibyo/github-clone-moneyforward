@@ -6,9 +6,12 @@ import com.moneyfoward.githubclone.core.data.networking.ConfigApi
 import com.moneyfoward.githubclone.core.domain.onError
 import com.moneyfoward.githubclone.core.domain.onSuccess
 import com.moneyfoward.githubclone.user.domain.UserDataSource
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -21,6 +24,7 @@ class UserListViewModel (
 ) : ViewModel() {
 
     //UI State
+    private val searchQueryFlow = MutableStateFlow("")
     private val _state = MutableStateFlow<UserListState>(UserListState())
     val state = _state
         .onStart {
@@ -62,17 +66,32 @@ class UserListViewModel (
         }
     }
 
+    init {
+        observeSearchQuery()
+    }
+
     private fun onSearch(query: String) {
+        searchQueryFlow.value = query
         _state.update {
             it.copy(
                 query = query
             )
         }
-        currentPage = 1
-        sinceId = 0
-        hasNextPage = true
-        fetchUsers(reset = true)
     }
+
+    private fun observeSearchQuery() {
+        viewModelScope.launch {
+            searchQueryFlow
+                .debounce(300)
+                .distinctUntilChanged()
+                .collect { query ->
+                    currentPage = 1
+                    sinceId = 0
+                    fetchUsers(reset = true)
+                }
+        }
+    }
+
 
     private fun refresh() {
         _state.update {

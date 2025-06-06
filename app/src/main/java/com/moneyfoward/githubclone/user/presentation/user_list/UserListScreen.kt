@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -17,6 +19,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.moneyfoward.githubclone.core.presentation.ObserverAsEvents
 import com.moneyfoward.githubclone.core.presentation.toString
 import com.moneyfoward.githubclone.ui.theme.GithubCloneTheme
+import com.moneyfoward.githubclone.ui.theme.Neutral
 import com.moneyfoward.githubclone.user.presentation.user_list.components.InfiniteUserList
 import com.moneyfoward.githubclone.user.presentation.user_list.components.SearchBar
 import org.koin.androidx.compose.koinViewModel
@@ -54,7 +57,10 @@ fun UserListScreen(
                             viewmodel.onAction(UserListAction.OnUserSearch(query))
                         }
                     )
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Neutral
+                )
             )
         }
 

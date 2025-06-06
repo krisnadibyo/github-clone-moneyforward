@@ -39,11 +39,10 @@ fun InfiniteUserList(
     }
 
     LazyColumn(
-        state = listState,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        state = listState
     ) {
         items(items) { item ->
-            UserItem(
+            UserListCard(
                 user = item
             )
         }

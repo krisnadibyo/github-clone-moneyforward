@@ -1,5 +1,6 @@
 package com.moneyfoward.githubclone.core.data.networking
 
+import com.moneyfoward.githubclone.BuildConfig
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -8,6 +9,7 @@ import io.ktor.client.plugins.logging.ANDROID
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.request.bearerAuth
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.headers
@@ -30,10 +32,7 @@ object HttpClientFactory {
             }
             defaultRequest {
                 contentType(ContentType.Application.Json)
-                headers {
-                    append("Authorization","Bearer ")
-                    append("X-GitHub-Api-Version", "2022-11-28")
-                }
+                bearerAuth(BuildConfig.API_KEY)
             }
         }
     }
