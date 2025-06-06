@@ -12,3 +12,5 @@ val Pink40 = Color(0xFF7D5260)
 
 val Neutral = Color.White
 val Accent = Color.Black
+val GoldenYellow = Color(255, 223, 0)
+val DeepSaffron = Color(255, 149, 41)

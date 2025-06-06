@@ -1,6 +1,7 @@
 package com.moneyfoward.githubclone.core.data.networking
 
 import com.moneyfoward.githubclone.BuildConfig
+import com.moneyfoward.githubclone.core.data.networking.ConfigApi.API_KEY
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -32,7 +33,7 @@ object HttpClientFactory {
             }
             defaultRequest {
                 contentType(ContentType.Application.Json)
-                bearerAuth(BuildConfig.API_KEY)
+                bearerAuth(API_KEY)
             }
         }
     }
