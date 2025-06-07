@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.moneyfoward.githubclone.core.data.networking.ConfigApi
 import com.moneyfoward.githubclone.core.domain.onError
 import com.moneyfoward.githubclone.core.domain.onSuccess
-import com.moneyfoward.githubclone.github.domain.UserDataSource
+import com.moneyfoward.githubclone.github.domain.GithubDataSource
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 
 
 class UserListViewModel (
-    private val repository: UserDataSource,
+    private val repository: GithubDataSource,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 

@@ -1,10 +1,8 @@
 package com.moneyfoward.githubclone.di
 
 import com.moneyfoward.githubclone.core.data.networking.HttpClientFactory
-import com.moneyfoward.githubclone.github.data.networking.RemoteUserDataSource
-import com.moneyfoward.githubclone.github.data.networking.RemoteUserRepoDataSource
-import com.moneyfoward.githubclone.github.domain.RepoDataSource
-import com.moneyfoward.githubclone.github.domain.UserDataSource
+import com.moneyfoward.githubclone.github.data.networking.RemoteGithubDataSource
+import com.moneyfoward.githubclone.github.domain.GithubDataSource
 import com.moneyfoward.githubclone.github.presentation.user_detail.UserDetailViewModel
 import com.moneyfoward.githubclone.github.presentation.user_list.UserListViewModel
 import io.ktor.client.engine.cio.CIO
@@ -19,11 +17,10 @@ val appModule = module {
     single { HttpClientFactory.create(CIO.create()) }
 
     // Data Source and Repository
-    singleOf(::RemoteUserDataSource).bind<UserDataSource>()
-    singleOf(::RemoteUserRepoDataSource).bind<RepoDataSource>()
+    singleOf(::RemoteGithubDataSource).bind<GithubDataSource>()
 
     //Viewmodel
     viewModelOf(::UserListViewModel)
-    viewModel { UserDetailViewModel(get(), get(), get()) }
+    viewModel { UserDetailViewModel(get(), get()) }
 
 }

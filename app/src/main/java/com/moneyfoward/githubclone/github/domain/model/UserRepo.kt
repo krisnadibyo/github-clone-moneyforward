@@ -25,14 +25,3 @@ fun UserRepo.stars(): String {
         return "${formatted}K"
     }
 }
-
-fun UserRepo.randomColor(): Int {
-    val colors = listOf(
-        Color.RED,
-        Color.GREEN,
-        Color.MAGENTA,
-        Color.BLUE,
-        Color.CYAN
-    )
-    return colors[(0..colors.size-1).random()]
-}

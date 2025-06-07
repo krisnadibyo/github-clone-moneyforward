@@ -31,6 +31,6 @@ fun UserRepoDto.toUserRepo(): UserRepo {
         isFork = isFork,
         htmlUrl = htmlUrl,
         stars = stars,
-        language = "",
+        language = language ?: "Unknown",
     )
 }

@@ -19,8 +19,8 @@ data class UserRepoDto(
     val htmlUrl: String,
     @SerialName("stargazers_count")
     val stars: Int,
-    @SerialName("languages_url")
-    val languageLink: String
+    @SerialName("language")
+    val language: String?
 )
 
 typealias UserRepoResponse = List<UserRepoDto>

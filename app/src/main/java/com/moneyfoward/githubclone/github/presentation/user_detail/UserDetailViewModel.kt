@@ -6,8 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.moneyfoward.githubclone.core.data.networking.ConfigApi
 import com.moneyfoward.githubclone.core.domain.onError
 import com.moneyfoward.githubclone.core.domain.onSuccess
-import com.moneyfoward.githubclone.github.domain.RepoDataSource
-import com.moneyfoward.githubclone.github.domain.UserDataSource
+import com.moneyfoward.githubclone.github.domain.GithubDataSource
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -19,8 +18,7 @@ import kotlinx.coroutines.launch
 
 
 class UserDetailViewModel(
-    private val userRepository: UserDataSource,
-    private val userRepoRepository: RepoDataSource,
+    private val repository: GithubDataSource,
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
 
@@ -83,7 +81,7 @@ class UserDetailViewModel(
                     isRefreshing = true
                 )
             }
-            userRepository.getUser(username)
+            repository.getUser(username)
                 .onSuccess { newUser ->
                     _state.update {
                         it.copy(
@@ -107,42 +105,29 @@ class UserDetailViewModel(
     private fun fetchRepository(reset: Boolean = false) {
         viewModelScope.launch {
             isLoading = true
-            if (reset) {
-                _state.update {
-                    it.copy(
-                        isRefreshing = true
-                    )
-                }
-            } else {
-                _state.update {
-                    it.copy(
-                        isLoadingMore = true
-                    )
-                }
+            _state.update {
+                it.copy(
+                    isLoadingMore = true
+                )
             }
-            userRepoRepository.getUserRepos(username, currentPage)
+            repository.getUserRepos(username, currentPage)
                 .onSuccess { result ->
                     val filteredResult = result.filter { !it.isFork }
                     _state.update {
                         val newRepos = if (reset) filteredResult else it.repositories.plus(filteredResult)
                         it.copy(
                             repositories = newRepos,
-                            isLoadingMore = false,
-                            isRefreshing = false
+                            isLoadingMore = false
                         )
                     }
                     // Fetch Language Info because there's no language label on this API
-                    filteredResult.forEach {
-                        fetchLanguage(it.fullName)
-                    }
                     currentPage += 1
                     hasNextPage = result.size >= ConfigApi.PAGE_SIZE
                 }
                 .onError { error ->
                     _state.update {
                         it.copy(
-                            isLoadingMore = false,
-                            isRefreshing = false
+                            isLoadingMore = false
                         )
                     }
                     _events.send(UserDetailEvent.Error(error))
@@ -150,31 +135,4 @@ class UserDetailViewModel(
             isLoading = false
         }
     }
-
-    private fun fetchLanguage(repo: String) {
-        viewModelScope.launch {
-            userRepoRepository.getLanguageRepo(repo)
-                .onSuccess { result ->
-                    _state.update {
-                        it.copy(
-                            repositories = it.repositories.map { userRepo ->
-                                if (userRepo.fullName == repo) {
-                                    userRepo.copy(
-                                        language = result
-                                    )
-                                } else {
-                                    userRepo
-                                }
-                            }
-                        )
-                    }
-                }
-                .onError {
-                    // Do Nothing
-                }
-        }
-    }
-
-
-
 }

@@ -7,27 +7,31 @@ import com.moneyfoward.githubclone.core.domain.NetworkError
 import com.moneyfoward.githubclone.core.domain.Result
 import com.moneyfoward.githubclone.core.domain.map
 import com.moneyfoward.githubclone.github.data.mappers.toUser
+import com.moneyfoward.githubclone.github.data.mappers.toUserRepo
 import com.moneyfoward.githubclone.github.data.networking.dto.UserDetailResponse
 import com.moneyfoward.githubclone.github.data.networking.dto.UserListResponse
+import com.moneyfoward.githubclone.github.data.networking.dto.UserRepoResponse
 import com.moneyfoward.githubclone.github.data.networking.dto.UserSearchResponseDto
+import com.moneyfoward.githubclone.github.domain.GithubDataSource
 import com.moneyfoward.githubclone.github.domain.model.User
-import com.moneyfoward.githubclone.github.domain.UserDataSource
+import com.moneyfoward.githubclone.github.domain.model.UserRepo
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
+import kotlin.collections.map
 
 
-class RemoteUserDataSource(
+class RemoteGithubDataSource(
     private val httpClient: HttpClient
-): UserDataSource {
-    override suspend fun getUsers(since: Int): Result<List<User>, NetworkError> {
+): GithubDataSource {
+    override suspend fun getUsers(since: Int): com.moneyfoward.githubclone.core.domain.Result<List<User>, NetworkError> {
         return safeCall<UserListResponse> {
             httpClient.get(
                 urlString = buildUrl("/users")
             ) {
-               url {
-                   it.parameters.append("since",since.toString())
-                   it.parameters.append("per_page", PAGE_SIZE.toString())
-               }
+                url {
+                    it.parameters.append("since",since.toString())
+                    it.parameters.append("per_page", PAGE_SIZE.toString())
+                }
             }
         }.map {
             it.map {
@@ -36,7 +40,7 @@ class RemoteUserDataSource(
         }
     }
 
-    override suspend fun getSearchUsers(query: String, page: Int): Result<List<User>, NetworkError> {
+    override suspend fun getSearchUsers(query: String, page: Int): com.moneyfoward.githubclone.core.domain.Result<List<User>, NetworkError> {
         return safeCall<UserSearchResponseDto> {
             httpClient.get(
                 urlString = buildUrl("/search/users")
@@ -65,4 +69,21 @@ class RemoteUserDataSource(
         }
     }
 
+    override suspend fun getUserRepos(username: String, page: Int): Result<List<UserRepo>, NetworkError> {
+        return safeCall<UserRepoResponse> {
+            httpClient.get(
+                urlString = buildUrl("/users/${username}/repos")
+            ) {
+                url {
+                    it.parameters.append("page",page.toString())
+                    it.parameters.append("per_page", PAGE_SIZE.toString())
+                    it.parameters.append("sort","updated")
+                }
+            }
+        }.map {
+            it.map {
+                it.toUserRepo()
+            }
+        }
+    }
 }

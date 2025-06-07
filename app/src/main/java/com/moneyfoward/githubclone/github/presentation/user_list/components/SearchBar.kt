@@ -95,13 +95,10 @@ fun SearchBar(
                 }
 
             },
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Search
-            ),
             singleLine = true,
             textStyle = TextStyle(
                 color = MaterialTheme.colorScheme.onBackground,
-                fontSize = 10.sp,
+                fontSize = 14.sp,
                 fontWeight = FontWeight.Normal,
 
                 ),
