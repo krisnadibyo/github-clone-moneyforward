@@ -15,7 +15,6 @@ data class UserRepo(
     val language: String
 )
 
-@SuppressLint("DefaultLocale")
 fun UserRepo.stars(): String {
     if (stars < 1000) {
         return stars.toString()
