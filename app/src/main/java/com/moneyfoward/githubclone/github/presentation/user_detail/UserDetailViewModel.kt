@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 class UserDetailViewModel(
     private val repository: GithubDataSource,
     savedStateHandle: SavedStateHandle
-): ViewModel() {
+) : ViewModel() {
 
     // UI State
     private val _state = MutableStateFlow<UserDetailState>(UserDetailState())
@@ -38,11 +38,14 @@ class UserDetailViewModel(
             SharingStarted.WhileSubscribed(5000L),
             UserDetailState()
         )
+
     // Business State
     private var isFirstLoaded = savedStateHandle["isLoaded"] ?: false
     private val username = checkNotNull(savedStateHandle.get<String>("username"))
-    private var currentPage = 1
-    private var hasNextPage = true
+    var currentPage = 1
+        private set
+    var hasNextPage = true
+        private set
     private var isLoading = false
 
     //Effect
@@ -51,10 +54,11 @@ class UserDetailViewModel(
 
     // Intent
     fun onAction(action: UserDetailAction) {
-        when(action) {
+        when (action) {
             UserDetailAction.OnScrollToBottom -> {
                 loadMore()
             }
+
             UserDetailAction.OnRefresh -> {
                 refresh()
             }
@@ -114,7 +118,8 @@ class UserDetailViewModel(
                 .onSuccess { result ->
                     val filteredResult = result.filter { !it.isFork }
                     _state.update {
-                        val newRepos = if (reset) filteredResult else it.repositories.plus(filteredResult)
+                        val newRepos =
+                            if (reset) filteredResult else it.repositories.plus(filteredResult)
                         it.copy(
                             repositories = newRepos,
                             isLoadingMore = false

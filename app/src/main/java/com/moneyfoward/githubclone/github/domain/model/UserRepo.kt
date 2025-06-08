@@ -1,18 +1,15 @@
 package com.moneyfoward.githubclone.github.domain.model
 
-import android.annotation.SuppressLint
-import android.graphics.Color
-
 data class UserRepo(
     val id: Long,
     val name: String,
     val fullName: String,
-    val isPrivate: Boolean,
-    val description: String,
+    val isPrivate: Boolean? = null,
+    val description: String = "",
     val isFork: Boolean,
-    val htmlUrl: String,
-    val stars: Int,
-    val language: String
+    val htmlUrl: String = "",
+    val stars: Int = 0,
+    val language: String = "Unknown"
 )
 
 fun UserRepo.stars(): String {

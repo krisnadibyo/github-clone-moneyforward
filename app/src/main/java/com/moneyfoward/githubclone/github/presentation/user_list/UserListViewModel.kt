@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 
-class UserListViewModel (
+class UserListViewModel(
     private val repository: GithubDataSource,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -43,8 +43,10 @@ class UserListViewModel (
 
     // Business State
     private var isFirstLoaded = savedStateHandle["isLoaded"] ?: false
-    private var currentPage = 1
-    private var hasNextPage = true
+    var currentPage = 1
+        private set
+    var hasNextPage = true
+        private set
     private var sinceId = 0
     private var isLoading = false
 
@@ -54,10 +56,11 @@ class UserListViewModel (
 
     //Intent
     fun onAction(action: UserListAction) {
-        when(action) {
+        when (action) {
             is UserListAction.OnRefresh -> {
                 refresh()
             }
+
             is UserListAction.OnScrollToBottom -> {
                 loadMore()
             }
@@ -164,7 +167,8 @@ class UserListViewModel (
                                 isLoadingMore = false
                             )
                         }
-                        sinceId = _state.value.users.last().id
+                        sinceId =
+                            if (_state.value.users.isNotEmpty()) _state.value.users.last().id else 0
                         hasNextPage = result.size >= ConfigApi.PAGE_SIZE
                     }
                     .onError { error ->
@@ -180,8 +184,6 @@ class UserListViewModel (
             isLoading = false
         }
     }
-
-
 
 
 }
