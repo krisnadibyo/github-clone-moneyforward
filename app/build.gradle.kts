@@ -14,6 +14,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.junit5)
 }
 
 
@@ -39,13 +40,13 @@ android {
                 "proguard-rules.pro"
             )
             buildConfigField("String", "BASE_URL", "\"https://api.github.com/\"")
-            buildConfigField("String","API_KEY","\"$apiKey\"")
+            buildConfigField("String", "API_KEY", "\"$apiKey\"")
 
         }
 
         debug {
             buildConfigField("String", "BASE_URL", "\"https://api.github.com/\"")
-            buildConfigField("String","API_KEY","\"$apiKey\"")
+            buildConfigField("String", "API_KEY", "\"$apiKey\"")
         }
     }
     compileOptions {
@@ -58,6 +59,13 @@ android {
     buildFeatures {
         buildConfig = true
         compose = true
+    }
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+            isReturnDefaultValues = true
+        }
     }
 }
 
@@ -72,7 +80,16 @@ dependencies {
     implementation(libs.bundles.coil)
 
     testImplementation(libs.junit)
+    // JUnit 5 dependencies
+    testImplementation(libs.junit5.api)
+    testImplementation(libs.junit5.params)
+    testRuntimeOnly(libs.junit5.engine)
 
+    // Android Test dependencies
+    androidTestImplementation(libs.junit5.api)
+    androidTestImplementation(libs.junit5.params)
+    androidTestImplementation(libs.junit5.android.test.compose)
+    androidTestRuntimeOnly(libs.junit5.engine)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))

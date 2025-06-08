@@ -32,11 +32,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.moneyfoward.githubclone.core.presentation.ObserverAsEvents
 import com.moneyfoward.githubclone.core.presentation.toString
-import com.moneyfoward.githubclone.ui.theme.Typography
 import com.moneyfoward.githubclone.github.presentation.user_detail.components.UserInfoSection
 import com.moneyfoward.githubclone.github.presentation.user_detail.components.UserRepoItem
-import com.moneyfoward.githubclone.github.presentation.user_list.UserListEvent
 import com.moneyfoward.githubclone.ui.theme.Dimens
+import com.moneyfoward.githubclone.ui.theme.Typography
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -114,9 +113,10 @@ fun UserDetailScreen(
                     UserInfoSection(
                         user = state.value.user
                     )
-                    Spacer(modifier = Modifier
-                        .fillMaxWidth()
-                        .height(24.dp)
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(24.dp)
                     )
                     Text(
                         text = "Repositories",

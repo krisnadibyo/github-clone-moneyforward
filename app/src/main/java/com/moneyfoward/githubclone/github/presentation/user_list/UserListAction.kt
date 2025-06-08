@@ -1,7 +1,5 @@
 package com.moneyfoward.githubclone.github.presentation.user_list
 
-import com.moneyfoward.githubclone.github.domain.model.User
-
 sealed interface UserListAction {
     class OnUserSearch(val query: String): UserListAction
 
