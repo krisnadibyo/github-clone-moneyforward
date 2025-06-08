@@ -1,5 +1,7 @@
 package com.moneyfoward.githubclone.github.domain.model
 
+import kotlin.math.floor
+
 data class UserRepo(
     val id: Long,
     val name: String,
@@ -16,8 +18,9 @@ fun UserRepo.stars(): String {
     if (stars < 1000) {
         return stars.toString()
     } else {
-        val shorten = stars / 1000f
-        val formatted = String.format("%.1f", shorten)
+        val shorten = (stars / 1000f)
+        val roundedDown = floor(shorten * 10) / 10
+        val formatted = String.format("%.1f", roundedDown)
         return "${formatted}K"
     }
 }
