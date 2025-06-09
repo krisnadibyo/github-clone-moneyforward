@@ -11,7 +11,7 @@ data class UserRepo(
     val isFork: Boolean,
     val htmlUrl: String = "",
     val stars: Int = 0,
-    val language: String = "Unknown"
+    val language: String = "Unknown",
 )
 
 fun UserRepo.stars(): String {

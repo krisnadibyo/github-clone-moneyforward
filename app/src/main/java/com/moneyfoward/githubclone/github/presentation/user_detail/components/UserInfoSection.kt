@@ -31,44 +31,45 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.moneyfoward.githubclone.R
-import com.moneyfoward.githubclone.ui.theme.Neutral
-import com.moneyfoward.githubclone.ui.theme.Typography
 import com.moneyfoward.githubclone.github.domain.model.User
-
+import com.moneyfoward.githubclone.ui.theme.NeutralLight
+import com.moneyfoward.githubclone.ui.theme.Typography
 
 @Composable
 fun UserInfoSection(
     modifier: Modifier = Modifier,
-    user: User
+    user: User,
 ) {
     Column(
-        modifier = modifier
-            .fillMaxWidth()
+        modifier =
+            modifier
+                .fillMaxWidth(),
     ) {
-        Row (
-            verticalAlignment = Alignment.CenterVertically
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             AsyncImage(
                 model = user.avatar,
                 contentDescription = null,
-                modifier = Modifier
-                    .size(50.dp)
-                    .clip(CircleShape),
-                contentScale = ContentScale.Crop
+                modifier =
+                    Modifier
+                        .size(50.dp)
+                        .clip(CircleShape),
+                contentScale = ContentScale.Crop,
             )
             Spacer(
-                modifier = Modifier.width(12.dp)
+                modifier = Modifier.width(12.dp),
             )
             Column {
                 Text(
                     text = user.name,
                     style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.SemiBold,
                 )
                 Text(
                     text = user.username,
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color.LightGray
+                    color = Color.LightGray,
                 )
             }
         }
@@ -76,75 +77,75 @@ fun UserInfoSection(
         if (user.bio.isNotEmpty()) {
             Text(
                 text = user.bio,
-                style = MaterialTheme.typography.bodySmall
+                style = MaterialTheme.typography.bodySmall,
             )
         }
         Spacer(modifier = Modifier.height(4.dp))
         if (user.location.isNotEmpty()) {
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(
                     imageVector = Icons.Default.Place,
                     contentDescription = null,
-                    modifier = Modifier
-                        .size(12.dp)
+                    modifier =
+                        Modifier
+                            .size(12.dp),
                 )
                 Text(
                     text = user.location,
                     style = MaterialTheme.typography.bodySmall,
                     fontSize = 10.sp,
-                    modifier = Modifier.padding(horizontal = 2.dp)
+                    modifier = Modifier.padding(horizontal = 2.dp),
                 )
-
             }
             Spacer(modifier = Modifier.height(2.dp))
         }
         if (user.company.isNotEmpty()) {
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_work),
                     contentDescription = null,
-                    modifier = Modifier
-                        .size(12.dp)
+                    modifier =
+                        Modifier
+                            .size(12.dp),
                 )
                 Text(
                     text = user.company,
                     style = MaterialTheme.typography.bodySmall,
                     fontSize = 10.sp,
-                    modifier = Modifier.padding(horizontal = 2.dp)
+                    modifier = Modifier.padding(horizontal = 2.dp),
                 )
             }
             Spacer(modifier = Modifier.height(2.dp))
         }
 
-
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
                 imageVector = Icons.Default.AccountCircle,
                 contentDescription = null,
-                modifier = Modifier
-                    .size(12.dp)
+                modifier =
+                    Modifier
+                        .size(12.dp),
             )
             Text(
-                text = buildAnnotatedString {
-                    append(user.followers.toString())
-                    append(" followers • ")
-                    append(user.following.toString())
-                    append(" following")
-                },
+                text =
+                    buildAnnotatedString {
+                        append(user.followers.toString())
+                        append(" followers • ")
+                        append(user.following.toString())
+                        append(" following")
+                    },
                 fontSize = 10.sp,
                 style = Typography.bodySmall,
-                modifier = Modifier.padding(horizontal = 2.dp)
+                modifier = Modifier.padding(horizontal = 2.dp),
             )
         }
-
     }
-
 }
 
 @Preview
@@ -152,17 +153,17 @@ fun UserInfoSection(
 private fun UserInfoSectionPreview() {
     MaterialTheme {
         UserInfoSection(
-            modifier = Modifier.background(Neutral),
-            user = User(
-                id = 1,
-                username = "Kennabila",
-                name = "Ken Nabila Setya",
-                avatar = "https://avatars.githubusercontent.com/u/174864?v=4",
-                bio = "",
-                company = "",
-                location = ""
-            )
+            modifier = Modifier.background(NeutralLight),
+            user =
+                User(
+                    id = 1,
+                    username = "Kennabila",
+                    name = "Ken Nabila Setya",
+                    avatar = "https://avatars.githubusercontent.com/u/174864?v=4",
+                    bio = "",
+                    company = "",
+                    location = "",
+                ),
         )
     }
-
 }

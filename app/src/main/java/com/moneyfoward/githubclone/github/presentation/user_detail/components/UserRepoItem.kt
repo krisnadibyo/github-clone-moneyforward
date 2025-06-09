@@ -26,59 +26,58 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.moneyfoward.githubclone.R
-import com.moneyfoward.githubclone.ui.theme.Neutral
-import com.moneyfoward.githubclone.ui.theme.Typography
 import com.moneyfoward.githubclone.github.domain.model.UserRepo
 import com.moneyfoward.githubclone.github.domain.model.stars
 import com.moneyfoward.githubclone.ui.theme.DeepSaffron
 import com.moneyfoward.githubclone.ui.theme.GoldenYellow
-
+import com.moneyfoward.githubclone.ui.theme.NeutralLight
+import com.moneyfoward.githubclone.ui.theme.Typography
 
 @Composable
 fun UserRepoItem(
     modifier: Modifier = Modifier,
     userRepo: UserRepo,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Column(
-        modifier = modifier
-            .clickable{ onClick() }
-            .padding(vertical = 4.dp)
+        modifier =
+            modifier
+                .clickable { onClick() }
+                .padding(vertical = 4.dp),
     ) {
-
         Text(
             text = userRepo.name,
             style = Typography.bodySmall,
             fontWeight = FontWeight.SemiBold,
-            fontSize = 13.sp
+            fontSize = 13.sp,
         )
         Text(
             text = userRepo.description,
             style = Typography.bodySmall,
             fontSize = 11.sp,
-            color = Color.Gray
+            color = Color.Gray,
         )
         Spacer(modifier = Modifier.height(6.dp))
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
                 modifier = Modifier.size(20.dp),
                 imageVector = ImageVector.vectorResource(R.drawable.ic_star),
                 contentDescription = null,
-                tint = GoldenYellow
+                tint = GoldenYellow,
             )
             Spacer(modifier = Modifier.width(2.dp))
             Text(
                 text = userRepo.stars(),
                 style = Typography.bodySmall,
-                fontSize = 10.sp
+                fontSize = 10.sp,
             )
             Spacer(modifier = Modifier.width(6.dp))
             Surface(
                 modifier = Modifier.size(10.dp),
                 color = DeepSaffron,
-                shape = CircleShape
+                shape = CircleShape,
             ) {
                 Spacer(modifier = Modifier.size(12.dp))
             }
@@ -87,23 +86,18 @@ fun UserRepoItem(
             Text(
                 text = userRepo.language,
                 style = Typography.bodySmall,
-                fontSize = 10.sp
+                fontSize = 10.sp,
             )
-
         }
         Spacer(modifier = Modifier.height(8.dp))
         HorizontalDivider(
-            modifier = Modifier
-                .padding(vertical = 2.dp),
+            modifier =
+                Modifier
+                    .padding(vertical = 2.dp),
             thickness = 0.25.dp,
-            color = Color.LightGray
-
+            color = Color.LightGray,
         )
-
     }
-
-
-
 }
 
 @Preview
@@ -112,22 +106,21 @@ private fun UserRepoCardPreview() {
     MaterialTheme {
         UserRepoItem(
             userRepo = dummyUserRepo,
-            modifier = Modifier.background(Neutral),
-            onClick = {}
+            modifier = Modifier.background(NeutralLight),
+            onClick = {},
         )
     }
-
 }
 
-private val dummyUserRepo = UserRepo(
-    id = 12,
-    name = "peerless",
-    fullName = "krisna/peerless",
-    isPrivate = false,
-    description = "Peerless is standalone application which runs games on macos",
-    isFork = false,
-    htmlUrl = "",
-    stars = 132312,
-    language = "Ruby"
-)
-
+private val dummyUserRepo =
+    UserRepo(
+        id = 12,
+        name = "peerless",
+        fullName = "krisna/peerless",
+        isPrivate = false,
+        description = "Peerless is standalone application which runs games on macos",
+        isFork = false,
+        htmlUrl = "",
+        stars = 132312,
+        language = "Ruby",
+    )

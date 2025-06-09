@@ -19,8 +19,8 @@ import kotlinx.serialization.json.Json
 import java.nio.channels.UnresolvedAddressException
 
 object HttpClientFactory {
-    fun create(engine: HttpClientEngine): HttpClient {
-        return HttpClient(engine) {
+    fun create(engine: HttpClientEngine): HttpClient =
+        HttpClient(engine) {
             install(Logging) {
                 level = LogLevel.ALL
                 logger = Logger.ANDROID
@@ -42,16 +42,15 @@ object HttpClientFactory {
 
             install(ContentNegotiation) {
                 json(
-                    json = Json {
-                        ignoreUnknownKeys = true
-                    }
+                    json =
+                        Json {
+                            ignoreUnknownKeys = true
+                        },
                 )
             }
             defaultRequest {
                 bearerAuth(API_KEY)
-                header("accept","application/vnd.github+json")
+                header("accept", "application/vnd.github+json")
             }
         }
-    }
-
 }

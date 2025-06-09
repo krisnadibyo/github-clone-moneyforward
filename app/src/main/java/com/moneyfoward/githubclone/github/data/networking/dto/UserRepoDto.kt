@@ -3,7 +3,6 @@ package com.moneyfoward.githubclone.github.data.networking.dto
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-
 @Serializable
 data class UserRepoDto(
     val id: Long,
@@ -20,7 +19,7 @@ data class UserRepoDto(
     @SerialName("stargazers_count")
     val stars: Int,
     @SerialName("language")
-    val language: String?
+    val language: String?,
 )
 
 typealias UserRepoResponse = List<UserRepoDto>

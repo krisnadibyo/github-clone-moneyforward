@@ -18,28 +18,26 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-
 class UserListViewModel(
     private val repository: GithubDataSource,
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
-
-    //UI State
+    // UI State
     private val searchQueryFlow = MutableStateFlow("")
     private val _state = MutableStateFlow<UserListState>(UserListState())
-    val state = _state
-        .onStart {
-            if (!isFirstLoaded) {
-                isFirstLoaded = true
-                savedStateHandle["isLoaded"] = true
-                refresh()
-            }
-        }
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5000L),
-            UserListState()
-        )
+    val state =
+        _state
+            .onStart {
+                if (!isFirstLoaded) {
+                    isFirstLoaded = true
+                    savedStateHandle["isLoaded"] = true
+                    refresh()
+                }
+            }.stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5000L),
+                UserListState(),
+            )
 
     // Business State
     private var isFirstLoaded = savedStateHandle["isLoaded"] ?: false
@@ -50,11 +48,11 @@ class UserListViewModel(
     private var sinceId = 0
     private var isLoading = false
 
-    //Effect
+    // Effect
     private val _events = Channel<UserListEvent>()
     val events = _events.receiveAsFlow()
 
-    //Intent
+    // Intent
     fun onAction(action: UserListAction) {
         when (action) {
             is UserListAction.OnRefresh -> {
@@ -79,7 +77,7 @@ class UserListViewModel(
         searchQueryFlow.value = query
         _state.update {
             it.copy(
-                query = query
+                query = query,
             )
         }
     }
@@ -97,11 +95,10 @@ class UserListViewModel(
         }
     }
 
-
     private fun refresh() {
         _state.update {
             it.copy(
-                query = null
+                query = null,
             )
         }
         currentPage = 1
@@ -123,59 +120,65 @@ class UserListViewModel(
             if (reset) {
                 _state.update {
                     it.copy(
-                        isRefreshing = true
+                        isRefreshing = true,
                     )
                 }
             } else {
                 _state.update {
                     it.copy(
-                        isLoadingMore = true
+                        isLoadingMore = true,
                     )
                 }
             }
             if (isSearchMode) {
-                repository.getSearchUsers(query, currentPage)
+                repository
+                    .getSearchUsers(query, currentPage)
                     .onSuccess { result ->
                         _state.update {
                             val newUsers = if (reset) result else it.users.plus(result)
                             it.copy(
                                 users = newUsers,
                                 isRefreshing = false,
-                                isLoadingMore = false
+                                isLoadingMore = false,
                             )
                         }
                         currentPage += 1
                         hasNextPage = result.size >= ConfigApi.PAGE_SIZE
-                    }
-                    .onError { error ->
+                    }.onError { error ->
                         _state.update {
                             it.copy(
                                 isRefreshing = false,
-                                isLoadingMore = false
+                                isLoadingMore = false,
                             )
                         }
                         _events.send(UserListEvent.Error(error))
                     }
             } else {
-                repository.getUsers(sinceId)
+                repository
+                    .getUsers(sinceId)
                     .onSuccess { result ->
                         _state.update {
                             val newUsers = if (reset) result else it.users.plus(result)
                             it.copy(
                                 users = newUsers,
                                 isRefreshing = false,
-                                isLoadingMore = false
+                                isLoadingMore = false,
                             )
                         }
                         sinceId =
-                            if (_state.value.users.isNotEmpty()) _state.value.users.last().id else 0
+                            if (_state.value.users.isNotEmpty()) {
+                                _state.value.users
+                                    .last()
+                                    .id
+                            } else {
+                                0
+                            }
                         hasNextPage = result.size >= ConfigApi.PAGE_SIZE
-                    }
-                    .onError { error ->
+                    }.onError { error ->
                         _state.update {
                             it.copy(
                                 isRefreshing = false,
-                                isLoadingMore = false
+                                isLoadingMore = false,
                             )
                         }
                         _events.send(UserListEvent.Error(error))
@@ -184,6 +187,4 @@ class UserListViewModel(
             isLoading = false
         }
     }
-
-
 }

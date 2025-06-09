@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -16,11 +15,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.moneyfoward.githubclone.core.presentation.ObserverAsEvents
 import com.moneyfoward.githubclone.core.presentation.toString
-import com.moneyfoward.githubclone.ui.theme.Neutral
 import com.moneyfoward.githubclone.github.presentation.user_list.components.InfiniteUserList
 import com.moneyfoward.githubclone.github.presentation.user_list.components.SearchBar
 import org.koin.androidx.compose.koinViewModel
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -28,18 +25,19 @@ import org.koin.androidx.compose.koinViewModel
 fun UserListScreen(
     modifier: Modifier,
     viewmodel: UserListViewModel = koinViewModel(),
-    navController: NavController
+    navController: NavController,
 ) {
     val context = LocalContext.current
     val state = viewmodel.state.collectAsStateWithLifecycle()
     ObserverAsEvents(events = viewmodel.events) { event ->
         when (event) {
             is UserListEvent.Error -> {
-                Toast.makeText(
-                    context,
-                    event.error.toString(context),
-                    Toast.LENGTH_LONG
-                ).show()
+                Toast
+                    .makeText(
+                        context,
+                        event.error.toString(context),
+                        Toast.LENGTH_LONG,
+                    ).show()
             }
         }
     }
@@ -53,34 +51,33 @@ fun UserListScreen(
                         query = state.value.query ?: "",
                         onTextChange = { query ->
                             viewmodel.onAction(UserListAction.OnUserSearch(query))
-                        }
+                        },
                     )
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Neutral
-                )
+                }
             )
-        }
-
+        },
     ) { innerPadding ->
         PullToRefreshBox(
             isRefreshing = state.value.isRefreshing,
             onRefresh = { viewmodel.onAction(UserListAction.OnRefresh) },
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
         ) {
             InfiniteUserList(
                 items = state.value.users,
                 isLoadingMore = state.value.isLoadingMore,
                 onLoadMore = { viewmodel.onAction(UserListAction.OnScrollToBottom) },
-                onClickItem = { user -> navController.navigate("user/${user.username}") {
-                    popUpTo(navController.graph.startDestinationId) {
-                        saveState = true
+                onClickItem = { user ->
+                    navController.navigate("user/${user.username}") {
+                        popUpTo(navController.graph.startDestinationId) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
                     }
-                    launchSingleTop = true
-                    restoreState = true
-                } }
+                },
             )
         }
     }

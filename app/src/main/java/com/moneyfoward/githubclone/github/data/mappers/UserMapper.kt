@@ -5,9 +5,8 @@ import com.moneyfoward.githubclone.github.data.networking.dto.UserRepoDto
 import com.moneyfoward.githubclone.github.domain.model.User
 import com.moneyfoward.githubclone.github.domain.model.UserRepo
 
-
-fun UserDto.toUser(): User {
-    return User(
+fun UserDto.toUser(): User =
+    User(
         id = id,
         username = login,
         avatar = avatarUrl ?: "",
@@ -16,13 +15,11 @@ fun UserDto.toUser(): User {
         location = location ?: "",
         followers = followers,
         following = following,
-        company = company ?: ""
-
+        company = company ?: "",
     )
-}
 
-fun UserRepoDto.toUserRepo(): UserRepo {
-    return UserRepo(
+fun UserRepoDto.toUserRepo(): UserRepo =
+    UserRepo(
         id = id,
         name = name,
         fullName = fullName,
@@ -33,4 +30,3 @@ fun UserRepoDto.toUserRepo(): UserRepo {
         stars = stars,
         language = language ?: "Unknown",
     )
-}

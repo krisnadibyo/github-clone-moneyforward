@@ -16,28 +16,25 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-
 class UserDetailViewModel(
     private val repository: GithubDataSource,
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
-
     // UI State
     private val _state = MutableStateFlow<UserDetailState>(UserDetailState())
-    val state = _state
-        .onStart {
-            if (!isFirstLoaded) {
-                isFirstLoaded = true
-                savedStateHandle["isLoaded"] = true
-                refresh()
-
-            }
-        }
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5000L),
-            UserDetailState()
-        )
+    val state =
+        _state
+            .onStart {
+                if (!isFirstLoaded) {
+                    isFirstLoaded = true
+                    savedStateHandle["isLoaded"] = true
+                    refresh()
+                }
+            }.stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5000L),
+                UserDetailState(),
+            )
 
     // Business State
     private var isFirstLoaded = savedStateHandle["isLoaded"] ?: false
@@ -48,7 +45,7 @@ class UserDetailViewModel(
         private set
     private var isLoading = false
 
-    //Effect
+    // Effect
     private val _events = Channel<UserDetailEvent>()
     val events = _events.receiveAsFlow()
 
@@ -82,23 +79,23 @@ class UserDetailViewModel(
             isLoading = true
             _state.update {
                 it.copy(
-                    isRefreshing = true
+                    isRefreshing = true,
                 )
             }
-            repository.getUser(username)
+            repository
+                .getUser(username)
                 .onSuccess { newUser ->
                     _state.update {
                         it.copy(
                             user = newUser,
-                            isRefreshing = false
+                            isRefreshing = false,
                         )
                     }
                     isLoading = false
-                }
-                .onError { error ->
+                }.onError { error ->
                     _state.update {
                         it.copy(
-                            isRefreshing = false
+                            isRefreshing = false,
                         )
                     }
                     _events.send(UserDetailEvent.Error(error))
@@ -111,10 +108,11 @@ class UserDetailViewModel(
             isLoading = true
             _state.update {
                 it.copy(
-                    isLoadingMore = true
+                    isLoadingMore = true,
                 )
             }
-            repository.getUserRepos(username, currentPage)
+            repository
+                .getUserRepos(username, currentPage)
                 .onSuccess { result ->
                     val filteredResult = result.filter { !it.isFork }
                     _state.update {
@@ -122,17 +120,16 @@ class UserDetailViewModel(
                             if (reset) filteredResult else it.repositories.plus(filteredResult)
                         it.copy(
                             repositories = newRepos,
-                            isLoadingMore = false
+                            isLoadingMore = false,
                         )
                     }
                     // Fetch Language Info because there's no language label on this API
                     currentPage += 1
                     hasNextPage = result.size >= ConfigApi.PAGE_SIZE
-                }
-                .onError { error ->
+                }.onError { error ->
                     _state.update {
                         it.copy(
-                            isLoadingMore = false
+                            isLoadingMore = false,
                         )
                     }
                     _events.send(UserDetailEvent.Error(error))

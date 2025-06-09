@@ -26,10 +26,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.moneyfoward.githubclone.R
 import com.moneyfoward.githubclone.core.presentation.ObserverAsEvents
 import com.moneyfoward.githubclone.core.presentation.toString
 import com.moneyfoward.githubclone.github.presentation.user_detail.components.UserInfoSection
@@ -43,18 +45,22 @@ import org.koin.androidx.compose.koinViewModel
 fun UserDetailScreen(
     modifier: Modifier,
     viewModel: UserDetailViewModel = koinViewModel(),
-    navController: NavController
+    navController: NavController,
 ) {
     val context = LocalContext.current
     val state = viewModel.state.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
-    val shouldLoadMore = remember {
-        derivedStateOf {
-            val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
-            val totalItems = listState.layoutInfo.totalItemsCount
-            lastVisibleItem >= totalItems - 1 && !state.value.isLoadingMore
+    val shouldLoadMore =
+        remember {
+            derivedStateOf {
+                val lastVisibleItem =
+                    listState.layoutInfo.visibleItemsInfo
+                        .lastOrNull()
+                        ?.index ?: -1
+                val totalItems = listState.layoutInfo.totalItemsCount
+                lastVisibleItem >= totalItems - 1 && !state.value.isLoadingMore
+            }
         }
-    }
     val loadMore = {
         viewModel.onAction(UserDetailAction.OnScrollToBottom)
     }
@@ -68,15 +74,15 @@ fun UserDetailScreen(
     ObserverAsEvents(events = viewModel.events) { event ->
         when (event) {
             is UserDetailEvent.Error -> {
-                Toast.makeText(
-                    context,
-                    event.error.toString(context),
-                    Toast.LENGTH_LONG
-                ).show()
+                Toast
+                    .makeText(
+                        context,
+                        event.error.toString(context),
+                        Toast.LENGTH_LONG,
+                    ).show()
             }
         }
     }
-
 
     Scaffold(
         topBar = {
@@ -86,74 +92,69 @@ fun UserDetailScreen(
                     IconButton(
                         onClick = {
                             navController.popBackStack()
-                        }
+                        },
                     ) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = null,
                         )
                     }
-                }
+                },
             )
-        }
+        },
     ) {
         PullToRefreshBox(
             isRefreshing = state.value.isRefreshing,
             onRefresh = { viewModel.onAction(UserDetailAction.OnRefresh) },
-            modifier = modifier
-                .padding(it)
-                .padding(horizontal = Dimens.ScreenPadding)
+            modifier =
+                modifier
+                    .padding(it)
+                    .padding(horizontal = Dimens.ScreenPadding),
         ) {
-            if (state.value.isRefreshing) return@PullToRefreshBox
-
-            LazyColumn(
-                state = listState
-            ) {
-                item {
-                    UserInfoSection(
-                        user = state.value.user
-                    )
-                    Spacer(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(24.dp)
-                    )
-                    Text(
-                        text = "Repositories",
-                        style = Typography.titleSmall,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                }
-
-                items(state.value.repositories) { userRepo ->
-                    UserRepoItem(
-                        userRepo = userRepo,
-                        onClick = { navController.navigate("repository/${userRepo.fullName}") }
-                    )
-                }
-
-                if (state.value.isLoadingMore) {
-                    item(key = "loading_more") {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(24.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator()
-                        }
+            if (!state.value.isRefreshing) {
+                LazyColumn(
+                    state = listState,
+                ) {
+                    item {
+                        UserInfoSection(
+                            user = state.value.user,
+                        )
+                        Spacer(
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .height(24.dp),
+                        )
+                        Text(
+                            text = stringResource(R.string.repositories),
+                            style = Typography.titleSmall,
+                            fontWeight = FontWeight.Bold,
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
                     }
 
+                    items(state.value.repositories) { userRepo ->
+                        UserRepoItem(
+                            userRepo = userRepo,
+                            onClick = { navController.navigate("repository/${userRepo.fullName}") },
+                        )
+                    }
+
+                    if (state.value.isLoadingMore) {
+                        item(key = "loading_more") {
+                            Box(
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .padding(24.dp),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                CircularProgressIndicator()
+                            }
+                        }
+                    }
                 }
             }
         }
-
     }
-
-
 }
-
-
-

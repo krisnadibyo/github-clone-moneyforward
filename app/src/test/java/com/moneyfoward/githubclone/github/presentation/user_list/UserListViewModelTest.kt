@@ -25,7 +25,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
-
 class UserListViewModelTest {
     private lateinit var viewmodel: UserListViewModel
     private lateinit var repository: FakeRemoteGithubDataSource
@@ -34,26 +33,26 @@ class UserListViewModelTest {
     private val testScope = TestScope(testDispatcher)
     private var collectJob: Job? = null
 
-
     @OptIn(ExperimentalCoroutinesApi::class)
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         savedStateHandle = SavedStateHandle()
         repository = FakeRemoteGithubDataSource()
-        viewmodel = UserListViewModel(
-            repository,
-            savedStateHandle
-        )
-        collectJob = testScope.launch {
-            viewmodel.state.collect()
-            viewmodel.events.collect()
-        }
+        viewmodel =
+            UserListViewModel(
+                repository,
+                savedStateHandle,
+            )
+        collectJob =
+            testScope.launch {
+                viewmodel.state.collect()
+                viewmodel.events.collect()
+            }
         runTest {
             // After init the refresh function is called
             advanceUntilIdle()
         }
-
     }
 
     @After
@@ -63,84 +62,86 @@ class UserListViewModelTest {
         repository.clearData()
     }
 
-
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `onRefresh should fetch users success and update state`() = runTest {
-        // Given
-        val fakeUsers = listOf(User(1, "krisna", "avatar.com"))
-        repository.addUsers(fakeUsers)
+    fun `onRefresh should fetch users success and update state`() =
+        runTest {
+            // Given
+            val fakeUsers = listOf(User(1, "krisna", "avatar.com"))
+            repository.addUsers(fakeUsers)
 
-        // When
-        viewmodel.onAction(UserListAction.OnRefresh)
-        advanceUntilIdle()
+            // When
+            viewmodel.onAction(UserListAction.OnRefresh)
+            advanceUntilIdle()
 
-        // Then
-        val state = viewmodel.state.value
-        assertEquals(fakeUsers, state.users)
-        assertFalse(state.isRefreshing)
-        assertFalse(viewmodel.hasNextPage)
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun `onRefresh should fetch users success with has next and update state`() = runTest {
-        // Given
-        val fakeUsers = mutableListOf<User>()
-        val pageSize = ConfigApi.PAGE_SIZE
-        repeat(pageSize) {
-            fakeUsers.add(User(it, "user-${it}", "user $it"))
+            // Then
+            val state = viewmodel.state.value
+            assertEquals(fakeUsers, state.users)
+            assertFalse(state.isRefreshing)
+            assertFalse(viewmodel.hasNextPage)
         }
-        repository.addUsers(fakeUsers)
-
-        // When
-        viewmodel.onAction(UserListAction.OnRefresh)
-        advanceUntilIdle()
-
-        // Then
-        val state = viewmodel.state.value
-        assertEquals(fakeUsers, state.users)
-        assertFalse(state.isRefreshing)
-        assertTrue(viewmodel.hasNextPage)
-    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `onRefresh should fetch users empty and update state`() = runTest {
-        // Given
-        val emptyUser = emptyList<User>()
+    fun `onRefresh should fetch users success with has next and update state`() =
+        runTest {
+            // Given
+            val fakeUsers = mutableListOf<User>()
+            val pageSize = ConfigApi.PAGE_SIZE
+            repeat(pageSize) {
+                fakeUsers.add(User(it, "user-$it", "user $it"))
+            }
+            repository.addUsers(fakeUsers)
 
-        // When
-        viewmodel.onAction(UserListAction.OnRefresh)
-        advanceUntilIdle()
+            // When
+            viewmodel.onAction(UserListAction.OnRefresh)
+            advanceUntilIdle()
 
-        // Then
-        val state = viewmodel.state.value
-        assertEquals(emptyUser, state.users)
-        assertFalse(state.isRefreshing)
-        assertFalse(viewmodel.hasNextPage)
-    }
+            // Then
+            val state = viewmodel.state.value
+            assertEquals(fakeUsers, state.users)
+            assertFalse(state.isRefreshing)
+            assertTrue(viewmodel.hasNextPage)
+        }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `onRefresh should fetch users Error, emit event and update state`() = runTest {
-        // Given
-        repository.setShouldReturnError(true, NetworkError.UNKNOWN)
-        val error = NetworkError.UNKNOWN
+    fun `onRefresh should fetch users empty and update state`() =
+        runTest {
+            // Given
+            val emptyUser = emptyList<User>()
 
-        // When
-        viewmodel.onAction(UserListAction.OnRefresh)
-        advanceUntilIdle()
+            // When
+            viewmodel.onAction(UserListAction.OnRefresh)
+            advanceUntilIdle()
 
-        // Then
-        val event = viewmodel.events.first()
-        val state = viewmodel.state.value
+            // Then
+            val state = viewmodel.state.value
+            assertEquals(emptyUser, state.users)
+            assertFalse(state.isRefreshing)
+            assertFalse(viewmodel.hasNextPage)
+        }
 
-        assertFalse(state.isRefreshing)
-        assertTrue(event is UserListEvent.Error)
-        assertEquals(error, (event as UserListEvent.Error).error)
-    }
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `onRefresh should fetch users Error, emit event and update state`() =
+        runTest {
+            // Given
+            repository.setShouldReturnError(true, NetworkError.UNKNOWN)
+            val error = NetworkError.UNKNOWN
 
+            // When
+            viewmodel.onAction(UserListAction.OnRefresh)
+            advanceUntilIdle()
+
+            // Then
+            val event = viewmodel.events.first()
+            val state = viewmodel.state.value
+
+            assertFalse(state.isRefreshing)
+            assertTrue(event is UserListEvent.Error)
+            assertEquals(error, (event as UserListEvent.Error).error)
+        }
 
     @Test
     fun `when search query is entered, should debounce 300ms and update state with query`() {
@@ -150,7 +151,6 @@ class UserListViewModelTest {
             val fakeUsers = listOf(User(1, "krisna", "avatar.com"))
             repository.addUsers(fakeUsers)
             val shouldOnlyCalledOnce = 1
-
 
             // Act - simulate rapid input
             viewmodel.onAction(UserListAction.OnUserSearch("k"))
@@ -173,75 +173,78 @@ class UserListViewModelTest {
     }
 
     @Test
-    fun `when load more user is called, should append new users to existing list`() = runTest {
-        // Given
-        val initialUsers = mutableListOf<User>()
-        val pageSize = ConfigApi.PAGE_SIZE
-        repeat(pageSize) {
-            initialUsers.add(User(it, "user-${it}", "avatar $it"))
+    fun `when load more user is called, should append new users to existing list`() =
+        runTest {
+            // Given
+            val initialUsers = mutableListOf<User>()
+            val pageSize = ConfigApi.PAGE_SIZE
+            repeat(pageSize) {
+                initialUsers.add(User(it, "user-$it", "avatar $it"))
+            }
+
+            val moreUsers =
+                listOf(
+                    User(id = 11, username = "user11", avatar = "avatar11"),
+                    User(id = 12, username = "user12", avatar = "avatar12"),
+                )
+            repository.addUsers(initialUsers)
+
+            // When - First load
+            viewmodel.onAction(UserListAction.OnRefresh)
+            advanceUntilIdle()
+
+            // Then - Verify initial load
+            var state = viewmodel.state.first()
+            assertEquals(initialUsers, state.users)
+            assertTrue(viewmodel.hasNextPage)
+
+            // When - Load more
+            repository.clearUser() // Clear previous users
+            repository.addUsers(moreUsers) // Add new users for next page
+            viewmodel.onAction(UserListAction.OnScrollToBottom)
+            advanceUntilIdle()
+
+            // Then - Verify appended users
+            state = viewmodel.state.first()
+            assertEquals(initialUsers + moreUsers, state.users)
+            assertFalse(viewmodel.hasNextPage)
         }
-
-        val moreUsers = listOf(
-            User(id = 11, username = "user11", avatar = "avatar11"),
-            User(id = 12, username = "user12", avatar = "avatar12")
-        )
-        repository.addUsers(initialUsers)
-
-        // When - First load
-        viewmodel.onAction(UserListAction.OnRefresh)
-        advanceUntilIdle()
-
-        // Then - Verify initial load
-        var state = viewmodel.state.first()
-        assertEquals(initialUsers, state.users)
-        assertTrue(viewmodel.hasNextPage)
-
-        // When - Load more
-        repository.clearUser() // Clear previous users
-        repository.addUsers(moreUsers) // Add new users for next page
-        viewmodel.onAction(UserListAction.OnScrollToBottom)
-        advanceUntilIdle()
-
-        // Then - Verify appended users
-        state = viewmodel.state.first()
-        assertEquals(initialUsers + moreUsers, state.users)
-        assertFalse(viewmodel.hasNextPage)
-    }
 
     @Test
-    fun `when load more user is called, and get error`() = runTest {
-        // Given
-        val initialUsers = mutableListOf<User>()
-        val pageSize = ConfigApi.PAGE_SIZE
-        repeat(pageSize) {
-            initialUsers.add(User(it, "user-${it}", "avatar $it"))
+    fun `when load more user is called, and get error`() =
+        runTest {
+            // Given
+            val initialUsers = mutableListOf<User>()
+            val pageSize = ConfigApi.PAGE_SIZE
+            repeat(pageSize) {
+                initialUsers.add(User(it, "user-$it", "avatar $it"))
+            }
+
+            repository.addUsers(initialUsers)
+
+            // When - First load
+            viewmodel.onAction(UserListAction.OnRefresh)
+            advanceUntilIdle()
+
+            // Then - Verify initial load
+            var state = viewmodel.state.first()
+            assertEquals(initialUsers, state.users)
+            assertTrue(viewmodel.hasNextPage)
+
+            // When - Load more
+            repository.clearUser()
+            repository.setShouldReturnError(true)
+            viewmodel.onAction(UserListAction.OnScrollToBottom)
+            advanceUntilIdle()
+
+            // Then - Verify appended users
+            state = viewmodel.state.first()
+            assertEquals(initialUsers, state.users)
+            assertTrue(viewmodel.hasNextPage)
+
+            val event = viewmodel.events.first()
+            assertTrue(event is UserListEvent.Error)
         }
-
-        repository.addUsers(initialUsers)
-
-        // When - First load
-        viewmodel.onAction(UserListAction.OnRefresh)
-        advanceUntilIdle()
-
-        // Then - Verify initial load
-        var state = viewmodel.state.first()
-        assertEquals(initialUsers, state.users)
-        assertTrue(viewmodel.hasNextPage)
-
-        // When - Load more
-        repository.clearUser()
-        repository.setShouldReturnError(true)
-        viewmodel.onAction(UserListAction.OnScrollToBottom)
-        advanceUntilIdle()
-
-        // Then - Verify appended users
-        state = viewmodel.state.first()
-        assertEquals(initialUsers, state.users)
-        assertTrue(viewmodel.hasNextPage)
-
-        val event = viewmodel.events.first()
-        assertTrue(event is UserListEvent.Error)
-    }
 
     @Test
     fun `when load more search user is called, should append new users to existing list`() =
@@ -251,13 +254,14 @@ class UserListViewModelTest {
             val pageSize = ConfigApi.PAGE_SIZE
             val query = "any search"
             repeat(pageSize) {
-                initialUsers.add(User(it, "user-${it}", "avatar $it"))
+                initialUsers.add(User(it, "user-$it", "avatar $it"))
             }
 
-            val moreUsers = listOf(
-                User(id = 11, username = "user11", avatar = "avatar11"),
-                User(id = 12, username = "user12", avatar = "avatar12")
-            )
+            val moreUsers =
+                listOf(
+                    User(id = 11, username = "user11", avatar = "avatar11"),
+                    User(id = 12, username = "user12", avatar = "avatar12"),
+                )
             repository.addUsers(initialUsers)
 
             // When - First load
@@ -283,43 +287,43 @@ class UserListViewModelTest {
         }
 
     @Test
-    fun `when load more search user is called, and get error`() = runTest {
-        // Given
-        val initialUsers = mutableListOf<User>()
-        val pageSize = ConfigApi.PAGE_SIZE
-        val query = "any search"
-        val lastPage = 2
-        repeat(pageSize) {
-            initialUsers.add(User(it, "user-${it}", "avatar $it"))
+    fun `when load more search user is called, and get error`() =
+        runTest {
+            // Given
+            val initialUsers = mutableListOf<User>()
+            val pageSize = ConfigApi.PAGE_SIZE
+            val query = "any search"
+            val lastPage = 2
+            repeat(pageSize) {
+                initialUsers.add(User(it, "user-$it", "avatar $it"))
+            }
+
+            repository.addUsers(initialUsers)
+
+            // When - First load
+            viewmodel.onAction(UserListAction.OnUserSearch(query))
+            advanceUntilIdle()
+
+            // Then - Verify initial load
+            var state = viewmodel.state.first()
+            assertEquals(initialUsers, state.users)
+            assertTrue(viewmodel.hasNextPage)
+            assertEquals(lastPage, viewmodel.currentPage)
+
+            // When - Load more
+            repository.clearUser()
+            repository.setShouldReturnError(true)
+            viewmodel.onAction(UserListAction.OnScrollToBottom)
+            advanceUntilIdle()
+
+            // Then - Verify appended users
+            state = viewmodel.state.first()
+            assertEquals(initialUsers, state.users)
+            assertEquals(lastPage, viewmodel.currentPage)
+            assertTrue(viewmodel.hasNextPage)
+            assertEquals(query, state.query)
+
+            val event = viewmodel.events.first()
+            assertTrue(event is UserListEvent.Error)
         }
-
-        repository.addUsers(initialUsers)
-
-        // When - First load
-        viewmodel.onAction(UserListAction.OnUserSearch(query))
-        advanceUntilIdle()
-
-        // Then - Verify initial load
-        var state = viewmodel.state.first()
-        assertEquals(initialUsers, state.users)
-        assertTrue(viewmodel.hasNextPage)
-        assertEquals(lastPage, viewmodel.currentPage)
-
-        // When - Load more
-        repository.clearUser()
-        repository.setShouldReturnError(true)
-        viewmodel.onAction(UserListAction.OnScrollToBottom)
-        advanceUntilIdle()
-
-        // Then - Verify appended users
-        state = viewmodel.state.first()
-        assertEquals(initialUsers, state.users)
-        assertEquals(lastPage, viewmodel.currentPage)
-        assertTrue(viewmodel.hasNextPage)
-        assertEquals(query, state.query)
-
-        val event = viewmodel.events.first()
-        assertTrue(event is UserListEvent.Error)
-    }
-
 }

@@ -7,4 +7,6 @@
     <string name="error_serialization">Error parsing data</string>
     <string name="unknown">Unknown Error has occurred</string>
     <string name="error_rate_limit">Rate Limit Exceeded</string>
+    <string name="search">Search</string>
+    <string name="repositories">Repositories</string>
 </resources>

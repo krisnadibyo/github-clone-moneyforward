@@ -28,24 +28,27 @@ import androidx.navigation.NavController
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun RepositoryDetailScreen(repoName:String, navController: NavController) {
+fun RepositoryDetailScreen(
+    repoName: String,
+    navController: NavController,
+) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {  },
+                title = { },
                 navigationIcon = {
                     IconButton(onClick = {
                         navController.popBackStack()
                     }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
-                }
+                },
             )
-        }
+        },
     ) {
         WebViewScreen(
             repoName,
-            Modifier.padding(it)
+            Modifier.padding(it),
         )
     }
 }
@@ -54,40 +57,47 @@ fun RepositoryDetailScreen(repoName:String, navController: NavController) {
 @Composable
 fun WebViewScreen(
     repoName: String,
-    modifier: Modifier
+    modifier: Modifier,
 ) {
     var isLoading by remember { mutableStateOf(true) }
-    val url = "https://github.com/${repoName}"
+    val url = "https://github.com/$repoName"
 
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
     ) {
         AndroidView(
             factory = {
                 WebView(it).apply {
-                    webViewClient = object : WebViewClient() {
-                        override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-                            super.onPageStarted(view, url, favicon)
-                            isLoading = true
-                        }
+                    webViewClient =
+                        object : WebViewClient() {
+                            override fun onPageStarted(
+                                view: WebView?,
+                                url: String?,
+                                favicon: Bitmap?,
+                            ) {
+                                super.onPageStarted(view, url, favicon)
+                                isLoading = true
+                            }
 
-                        override fun onPageFinished(view: WebView?, url: String?) {
-                            super.onPageFinished(view, url)
-                            isLoading = false
+                            override fun onPageFinished(
+                                view: WebView?,
+                                url: String?,
+                            ) {
+                                super.onPageFinished(view, url)
+                                isLoading = false
+                            }
                         }
-                    }
                     settings.javaScriptEnabled = true
                     loadUrl(url)
-                } },
+                }
+            },
             modifier = modifier,
-            update = { it.loadUrl(url) }
+            update = { it.loadUrl(url) },
         )
         if (isLoading) {
             CircularProgressIndicator(
-                modifier = Modifier.align(Alignment.Center)
+                modifier = Modifier.align(Alignment.Center),
             )
         }
-
     }
-
 }

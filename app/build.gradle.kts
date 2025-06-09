@@ -1,11 +1,12 @@
 import java.util.Properties
 
-val localProperties = Properties().apply {
-    val file = rootProject.file("local.properties")
-    if (file.exists()) {
-        file.inputStream().use { load(it) }
+val localProperties =
+    Properties().apply {
+        val file = rootProject.file("local.properties")
+        if (file.exists()) {
+            file.inputStream().use { load(it) }
+        }
     }
-}
 
 val apiKey = (localProperties["API_KEY"] ?: "") as String
 
@@ -15,7 +16,6 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
 }
-
 
 android {
     namespace = "com.moneyfoward.githubclone"
@@ -36,11 +36,10 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
             buildConfigField("String", "BASE_URL", "\"https://api.github.com/\"")
             buildConfigField("String", "API_KEY", "\"$apiKey\"")
-
         }
 
         debug {
@@ -83,7 +82,6 @@ dependencies {
     testImplementation(libs.turbine)
     testImplementation(libs.mockk)
     testImplementation(libs.kotlinx.test)
-
 
     // Android Test dependencies
     androidTestImplementation(libs.androidx.junit)
